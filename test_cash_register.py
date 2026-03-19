@@ -45,8 +45,8 @@ class TestToCents(unittest.TestCase):
     def test_dollars_and_cents(self):
         self.assertEqual(to_cents("2.12"), 212)
 
-    def test_floating_point_edge_case(self):
-        # 1.97 * 100 can produce 196.99999... without rounding
+    def test_decimal_precision(self):
+        """1.97 converts exactly to 197 cents with no drift."""
         self.assertEqual(to_cents("1.97"), 197)
 
     def test_zero(self):
@@ -55,7 +55,7 @@ class TestToCents(unittest.TestCase):
 
 class TestMinimumChange(unittest.TestCase):
     def test_88_cents_matches_sample_output(self):
-        # 2.12 owed, 3.00 paid → 88 cents → 3 quarters, 1 dime, 3 pennies
+        """2.12 owed, 3.00 paid → 88 cents → 3 quarters, 1 dime, 3 pennies."""
         result = minimum_change(88)
         counts = {s: c for c, s, _ in result}
         self.assertEqual(counts["quarter"], 3)
@@ -71,7 +71,7 @@ class TestMinimumChange(unittest.TestCase):
         self.assertEqual(counts["dollar"], 0)
 
     def test_167_cents(self):
-        # 1 dollar, 2 quarters, 1 dime, 1 nickel, 2 pennies
+        """1 dollar, 2 quarters, 1 dime, 1 nickel, 2 pennies."""
         result = minimum_change(167)
         counts = {s: c for c, s, _ in result}
         self.assertEqual(counts["dollar"], 1)
@@ -107,7 +107,7 @@ class TestRandomChange(unittest.TestCase):
         self.assertEqual(total_cents(result), 0)
 
     def test_produces_variety_over_runs(self):
-        # With 50 runs, the outputs should not all be identical (extremely unlikely)
+        """With 50 runs, the outputs should not all be identical (extremely unlikely)."""
         results = [format_change(random_change(167)) for _ in range(50)]
         self.assertGreater(len(set(results)), 1)
 
@@ -141,15 +141,15 @@ class TestFormatChange(unittest.TestCase):
 
 class TestCalculateChange(unittest.TestCase):
     def test_minimum_change_sample_1(self):
-        # 2.12 owed: 212 % 3 != 0 → minimum → "3 quarters,1 dime,3 pennies"
+        """2.12 owed: 212 % 3 != 0 → minimum → "3 quarters,1 dime,3 pennies"."""
         self.assertEqual(calculate_change("2.12", "3.00"), "3 quarters,1 dime,3 pennies")
 
     def test_minimum_change_sample_2(self):
-        # 1.97 owed: 197 % 3 != 0 → minimum → "3 pennies"
+        """1.97 owed: 197 % 3 != 0 → minimum → "3 pennies"."""
         self.assertEqual(calculate_change("1.97", "2.00"), "3 pennies")
 
     def test_random_change_total_correct(self):
-        # 3.33 owed: 333 % 3 == 0 → random, change = 167 cents
+        """3.33 owed: 333 % 3 == 0 → random, change = 167 cents."""
         for _ in range(20):
             result = calculate_change("3.33", "5.00")
             self.assertEqual(parse_change_string(result), 167)
@@ -172,8 +172,7 @@ class TestProcessLines(unittest.TestCase):
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0], "3 quarters,1 dime,3 pennies")
         self.assertEqual(results[1], "3 pennies")
-        # Third result is random; verify the total
-        self.assertEqual(parse_change_string(results[2]), 167)
+        self.assertEqual(parse_change_string(results[2]), 167)  # third result is random; verify the total
 
     def test_blank_lines_are_ignored(self):
         lines = ["2.12,3.00\n", "\n", "1.97,2.00\n"]

@@ -8,6 +8,7 @@ randomly distributed (but mathematically correct).
 
 import random
 import sys
+from decimal import Decimal
 
 RANDOM_DIVISOR = 3
 
@@ -22,8 +23,8 @@ DENOMINATIONS = [
 
 
 def to_cents(amount_str: str) -> int:
-    """Convert a dollar-amount string to integer cents, avoiding float drift."""
-    return round(float(amount_str) * 100)
+    """Convert a dollar-amount string to integer cents."""
+    return int(Decimal(amount_str) * 100)
 
 
 def minimum_change(change_cents: int) -> list[tuple[int, str, str]]:
