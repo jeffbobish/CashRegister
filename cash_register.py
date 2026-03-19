@@ -111,12 +111,13 @@ def process_file(input_path: str) -> list[str]:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <input_file>", file=sys.stderr)
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <input_file> <output_file>", file=sys.stderr)
         sys.exit(1)
 
     results = process_file(sys.argv[1])
-    print("\n".join(results))
+    with open(sys.argv[2], "w") as f:
+        f.write("\n".join(results) + "\n")
 
 
 if __name__ == "__main__":
