@@ -31,7 +31,10 @@ def minimum_change(change_cents: int) -> list[tuple[int, str, str]]:
     """Return denominations using the fewest possible coins/bills (greedy)."""
     result = []
     remaining = change_cents
+    # Go through denominations in order, using as many of each as possible before moving to
+    # smaller denomination in the next loop
     for value, singular, plural in DENOMINATIONS:
+        # divmod(2.12, 100) returns count = 2 and remaining = 12
         count, remaining = divmod(remaining, value)
         result.append((count, singular, plural))
     return result
